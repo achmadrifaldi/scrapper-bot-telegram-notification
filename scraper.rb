@@ -41,17 +41,21 @@ class Scraper < Kimurai::Base
         data: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[4]").text
       }
 
-      dateParse = DateTime.parse(payload[:date]).to_time
-      ctime = DateTime.now.to_time
-      diffTime = Time.at((ctime - dateParse)).strftime("%R:%S")
-
       # Message content
-
       text = "*CHAIN DATA:* \n ```#{payload[:tlm][:token_amount]} #{payload[:tlm][:description]}```\n"
       text += "=========================\n"
-      text += "*SERVER TIME:* #{ctime.strftime("%b %d, %Y  %I:%M:%S %p")}\n"
       text += "*DATA TIME:* #{payload[:date]}\n"
-      text += "*DIFF TIME:* #{diffTime}\n"
+
+      begin
+        dateParse = DateTime.parse(payload[:date]).to_time
+        ctime = DateTime.now.to_time
+        diffTime = Time.at((ctime - dateParse)).strftime("%R:%S")
+        text += "*SERVER TIME:* #{ctime.strftime("%b %d, %Y  %I:%M:%S %p")}\n"
+        text += "*DIFF TIME:* #{diffTime}\n"
+      rescue
+        puts payload[:date]
+      end
+
       text += "*ACTIONS:* #{payload[:actions]}\n"
       text += "*DATA:* ```#{payload[:data]}```\n"
       # text += "=========================\n"
@@ -65,7 +69,11 @@ class Scraper < Kimurai::Base
     # Send notification to telegram channel
     Telegram::Bot::Client.run(config['config']['token']) do |bot|
       File.foreach('chat.txt').with_index do |line, line_num|
-        bot.api.send_message(chat_id: line, text: message, parse_mode: 'Markdown')
+        begin
+          bot.api.send_message(chat_id: line, text: message, parse_mode: 'Markdown')
+        rescue
+          puts line
+        end
       end
     end
   end
