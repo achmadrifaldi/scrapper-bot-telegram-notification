@@ -31,6 +31,10 @@ class Scraper < Kimurai::Base
     [1].each do |position|
       # Parse data from response
       payload = {
+        tlm: {
+          token_amount: response.xpath("//table[@id='tokenTable']/tbody/div/div[@class='item'][1]/div[@class='content']/div[@class='description']/span[@class='token-amount']").text, 
+          description:  response.xpath("//table[@id='tokenTable']/tbody/div/div[@class='item'][1]").text
+        },
         tx: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[1]").text,
         date: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[2]").text,
         actions: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[3]").text,
@@ -42,8 +46,10 @@ class Scraper < Kimurai::Base
       diffTime = Time.at((ctime - dateParse)).strftime("%R:%S")
 
       # Message content
-      # text = "=========================\n"
-      text = "*SERVER TIME:* #{ctime.strftime("%b %d, %Y  %I:%M:%S %p")}\n"
+
+      text = "*CHAIN DATA:* \n ```#{payload[:tlm][:token_amount]} #{payload[:tlm][:description]}```\n"
+      text += "=========================\n"
+      text += "*SERVER TIME:* #{ctime.strftime("%b %d, %Y  %I:%M:%S %p")}\n"
       text += "*DATA TIME:* #{payload[:date]}\n"
       text += "*DIFF TIME:* #{diffTime}\n"
       text += "*ACTIONS:* #{payload[:actions]}\n"
