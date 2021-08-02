@@ -2,7 +2,7 @@ require_relative 'scraper'
 require 'rufus-scheduler'
 
 class Scheduler
-    def self.init(urls, timer: '15m')
+    def self.init(urls, timer = '15m')
         scheduler = Rufus::Scheduler.new
 
         scheduler.every timer do

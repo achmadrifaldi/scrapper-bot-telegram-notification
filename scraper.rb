@@ -2,6 +2,7 @@ require 'kimurai'
 require 'telegram/bot'
 require 'json'
 require 'yaml'
+require 'date'
 
 class Scraper < Kimurai::Base
   @name = "scraper"
@@ -36,9 +37,13 @@ class Scraper < Kimurai::Base
         data: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[4]").text
       }
 
+      dateParse = DateTime.parse(payload[:tx]).to_time
+      ctime = DateTime.now.to_time
+      diffTime = Time.at(ctime - dateParse).gmtime.strftime("%R:%S")
+
       # Message content
       text = "=========================\n"
-      text += "*TX:* #{payload[:tx]}\n"
+      text += "*DIFF TIME:* #{diffTime}\n"
       text += "*DATE:* #{payload[:date]}\n"
       text += "*ACTIONS:* #{payload[:actions]}\n"
       text += "*DATA:* ```#{payload[:data]}```\n"

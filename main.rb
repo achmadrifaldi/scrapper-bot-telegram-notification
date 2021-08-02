@@ -4,9 +4,9 @@ require_relative 'scheduler'
 
 # Read config from yaml file
 config = YAML.load_file('config.yml')
-TOKEN = config['token']
-URLS = config['urls']
-TIMER = config['scheduler']
+TOKEN = config['config']['token'] ||= ""
+URLS = config['config']['urls'] ||= []
+TIMER = config['config']['scheduler'] ||= '15m'
 
 # Run scheduler
 Scheduler.init(URLS, TIMER)
