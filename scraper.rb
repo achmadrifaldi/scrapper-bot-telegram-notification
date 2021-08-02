@@ -27,8 +27,8 @@ class Scraper < Kimurai::Base
 
     message = ""
 
-    # Only get first and second row
-    [1, 2].each do |position|
+    # Only get first row
+    [1].each do |position|
       # Parse data from response
       payload = {
         tx: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[1]").text,
