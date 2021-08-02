@@ -42,13 +42,13 @@ class Scraper < Kimurai::Base
       diffTime = Time.at((ctime - dateParse)).strftime("%R:%S")
 
       # Message content
-      text = "=========================\n"
-      text += "*SERVER TIME:* #{ctime.strftime("%b %d, %Y  %I:%M:%S %p")}\n"
+      # text = "=========================\n"
+      text = "*SERVER TIME:* #{ctime.strftime("%b %d, %Y  %I:%M:%S %p")}\n"
       text += "*DATA TIME:* #{payload[:date]}\n"
       text += "*DIFF TIME:* #{diffTime}\n"
       text += "*ACTIONS:* #{payload[:actions]}\n"
       text += "*DATA:* ```#{payload[:data]}```\n"
-      text += "=========================\n"
+      # text += "=========================\n"
 
       message += text
     end
