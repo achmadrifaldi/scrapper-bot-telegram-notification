@@ -66,11 +66,14 @@ class Scraper < Kimurai::Base
     # Read config from yaml file
     config = YAML.load_file('config.yml')
 
+    # Read chat id from file
+    ids = File.foreach('chat.txt').map { |line| line }.uniq
+
     # Send notification to telegram channel
     Telegram::Bot::Client.run(config['config']['token']) do |bot|
-      File.foreach('chat.txt').with_index do |line, line_num|
+      ids.each_with_index do |line, line_num|
         begin
-          bot.api.send_message(chat_id: line, text: message, parse_mode: 'Markdown')
+          bot.api.send_message(chat_id: line.to_i, text: message, parse_mode: 'Markdown')
         rescue
           puts line
         end
