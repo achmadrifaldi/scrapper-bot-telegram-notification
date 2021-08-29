@@ -21,7 +21,7 @@ class Scraper < Kimurai::Base
 
   def parse(response, url:, data: {})
     # Wait for content to be full rendered
-    sleep 5
+    sleep 30
 
     response = browser.current_response
 
@@ -40,6 +40,10 @@ class Scraper < Kimurai::Base
         actions: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[3]").text,
         data: response.xpath("//div[@class='actions-table']/table/tbody/tr[#{position}]/td[4]").text
       }
+
+      if payload[:data].blank?
+        break;
+      end
 
       # Message content
       text = "*CHAIN DATA:* \n ```#{payload[:tlm][:token_amount]} #{payload[:tlm][:description]}```\n"
