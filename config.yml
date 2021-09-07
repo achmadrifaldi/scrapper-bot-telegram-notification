@@ -1,7 +1,8 @@
 ---
 config:
   token: '1903061617:AAFLy3hnpj0Fs8lv12X5HzOZH-rt_GlffcQ'
-  scheduler: '15m'
+  scheduler: '2m'
+  down_time: '0'
   urls: [
       "https://wax.bloks.io/account/ayhuq.wam",
       "https://wax.bloks.io/account/mlkuo.wam"

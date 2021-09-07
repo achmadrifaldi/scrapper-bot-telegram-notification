@@ -25,6 +25,9 @@ class Scraper < Kimurai::Base
 
     response = browser.current_response
 
+    # Read config from yaml file
+    config = YAML.load_file('config.yml')
+
     message = ""
 
     # Only get first row
@@ -56,30 +59,32 @@ class Scraper < Kimurai::Base
         diffTime = Time.at((ctime - dateParse)).strftime("%R:%S")
         text += "*SERVER TIME:* #{ctime.strftime("%b %d, %Y  %I:%M:%S %p")}\n"
         text += "*DIFF TIME:* #{diffTime}\n"
+
+        # Only send based on down time condition
+        if ((ctime - dateParse)/3700).to_i >= config['config']['down_time'].to_i
+          text += "*ACTIONS:* #{payload[:actions]}\n"
+          text += "*DATA:* ```#{payload[:data]}```\n"
+          # text += "=========================\n"
+
+          message += text
+        end
       rescue
         puts payload[:date]
       end
-
-      text += "*ACTIONS:* #{payload[:actions]}\n"
-      text += "*DATA:* ```#{payload[:data]}```\n"
-      # text += "=========================\n"
-
-      message += text
     end
 
-    # Read config from yaml file
-    config = YAML.load_file('config.yml')
+    unless message.strip.empty?
+      # Read chat id from file
+      ids = File.foreach('chat.txt').map { |line| line }.uniq
 
-    # Read chat id from file
-    ids = File.foreach('chat.txt').map { |line| line }.uniq
-
-    # Send notification to telegram channel
-    Telegram::Bot::Client.run(config['config']['token']) do |bot|
-      ids.each_with_index do |line, line_num|
-        begin
-          bot.api.send_message(chat_id: line.to_i, text: message, parse_mode: 'Markdown')
-        rescue
-          puts line
+      # Send notification to telegram channel
+      Telegram::Bot::Client.run(config['config']['token']) do |bot|
+        ids.each_with_index do |line, line_num|
+          begin
+            bot.api.send_message(chat_id: line.to_i, text: message, parse_mode: 'Markdown')
+          rescue
+            puts line
+          end
         end
       end
     end
